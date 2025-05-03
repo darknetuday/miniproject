@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">WAF Scanner</h1>
+                <p class="card-text">Enter a URL to scan for WAF protection and vulnerabilities.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Scan URL</h5>
+                <form action="/scan" method="post">
+                    <div class="mb-3">
+                        <label for="url" class="form-label">Target URL</label>
+                        <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Start Scan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if scan_results %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Scan Results</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">WAF Detection</h6>
+                                <p class="card-text">
+                                    <strong>WAF Present:</strong> 
+                                    <span class="badge bg-{{ 'success' if scan_results.waf_detected else 'danger' }}">
+                                        {{ 'Yes' if scan_results.waf_detected else 'No' }}
+                                    </span>
+                                </p>
+                                {% if scan_results.waf_detected %}
+                                <p class="card-text">
+                                    <strong>WAF Type:</strong> {{ scan_results.waf_type }}
+                                </p>
+                                <p class="card-text">
+                                    <strong>WAF Strength:</strong> 
+                                    <span class="badge bg-{{ 'success' if scan_results.waf_strength == 'Strong' else 'warning' if scan_results.waf_strength == 'Medium' else 'danger' }}">
+                                        {{ scan_results.waf_strength }}
+                                    </span>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Vulnerabilities</h6>
+                                {% if scan_results.vulnerabilities %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for vuln in scan_results.vulnerabilities %}
+                                            <li class="list-group-item">
+                                                <span class="badge bg-danger">{{ vuln.severity }}</span>
+                                                {{ vuln.description }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="card-text">No vulnerabilities detected</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Recommendations</h5>
+                <ul class="list-group list-group-flush">
+                    {% for rec in scan_results.recommendations %}
+                        <li class="list-group-item">{{ rec }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

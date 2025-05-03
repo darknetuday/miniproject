@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Test WAF Protection</h1>
+                <p class="card-text">Test various WAF protection features by simulating attack patterns.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Test Fingerprinting Detection</h5>
+                <form action="/test/fingerprint" method="post">
+                    <div class="mb-3">
+                        <label for="userAgent" class="form-label">User Agent</label>
+                        <input type="text" class="form-control" id="userAgent" name="user_agent" value="wafw00f">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Test</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Test Suspicious Headers</h5>
+                <form action="/test/headers" method="post">
+                    <div class="mb-3">
+                        <label for="headerName" class="form-label">Header Name</label>
+                        <input type="text" class="form-control" id="headerName" name="header_name" value="X-WAF-Test">
+                    </div>
+                    <div class="mb-3">
+                        <label for="headerValue" class="form-label">Header Value</label>
+                        <input type="text" class="form-control" id="headerValue" name="header_value" value="true">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Test</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if test_results %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Test Results</h5>
+                <div class="alert alert-{{ 'success' if test_results.success else 'danger' }}">
+                    {{ test_results.message }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

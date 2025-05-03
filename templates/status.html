@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="card-title display-4 mb-4">
+                    <i class="bi bi-graph-up text-primary"></i> System Status
+                </h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card status-card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-shield-check"></i> Monitoring Status
+                </h5>
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge {% if status.is_monitoring %}bg-success{% else %}bg-danger{% endif %} me-2">
+                        {{ 'Active' if status.is_monitoring else 'Inactive' }}
+                    </span>
+                    <span class="text-muted">Total Alerts: {{ status.alert_count }}</span>
+                </div>
+                
+                <div class="mt-3">
+                    <form method="POST" action="{{ url_for('start_monitoring') }}" class="d-inline">
+                        <button type="submit" class="btn btn-success" {% if status.is_monitoring %}disabled{% endif %}>
+                            <i class="bi bi-play-circle"></i> Start Monitoring
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('stop_monitoring') }}" class="d-inline">
+                        <button type="submit" class="btn btn-danger" {% if not status.is_monitoring %}disabled{% endif %}>
+                            <i class="bi bi-stop-circle"></i> Stop Monitoring
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-lightning-charge"></i> Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('scan_trojan') }}" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-text"></i> Scan for Trojans
+                    </a>
+                    <a href="{{ url_for('scan_directory') }}" class="btn btn-secondary">
+                        <i class="bi bi-folder"></i> Scan Directory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Recent Alerts
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if alerts %}
+                    {% for alert in alerts %}
+                    <div class="alert alert-card {% if alert.type in ['dos_attack', 'malware'] %}alert-danger{% elif alert.type in ['port_scan', 'brute_force'] %}alert-warning{% else %}alert-info{% endif %}">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-exclamation-circle"></i> {{ alert.type|title }} Alert
+                        </h5>
+                        <p>{{ alert.details }}</p>
+                        <hr>
+                        <p class="mb-0">
+                            <small class="text-muted">
+                                <i class="bi bi-geo-alt"></i> Source: {{ alert.source_ip }} → Destination: {{ alert.destination_ip }}
+                                <br>
+                                <i class="bi bi-clock"></i> Time: {{ alert.timestamp }}
+                            </small>
+                        </p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No alerts to display
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
