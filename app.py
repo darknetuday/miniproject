@@ -606,6 +606,25 @@ trojan_detector = TrojanDetector(vt_api_key="YOUR_VIRUSTOTAL_API_KEY")
 # Initialize Captcha Checker
 captcha_checker = CaptchaChecker()
 
+# --- Decoy Path Exposure Scanner ---
+DEC0Y_PATHS = [
+    '/admin', '/phpmyadmin', '/config.php', '/backup.zip', '/.env', '/test', '/wp-admin', '/.git', '/.svn', '/db.sql', '/database.sql', '/setup.php', '/install.php', '/web.config', '/server-status', '/logs', '/error.log', '/debug.log'
+]
+
+def scan_decoy_paths(base_url):
+    exposed = []
+    checked = []
+    for path in DEC0Y_PATHS:
+        url = base_url.rstrip('/') + path
+        try:
+            resp = requests.get(url, timeout=5, verify=False)
+            checked.append({'path': path, 'status': resp.status_code})
+            if resp.status_code not in [403, 404]:
+                exposed.append(path)
+        except Exception as e:
+            checked.append({'path': path, 'status': 'error', 'error': str(e)})
+    return exposed, checked
+
 @app.before_request
 def before_request():
     """Apply WAF protection before each request"""
@@ -672,31 +691,31 @@ def test_fingerprint():
         'remote_addr': '127.0.0.1',
         'headers': {'User-Agent': user_agent}
     })
-    
     detected = waf.detect_fingerprinting(test_request)
     return render_template('test.html', 
                          test_results={
                              'success': not detected,
                              'message': 'Fingerprinting detected!' if detected else 'No fingerprinting detected.'
-                         })
+                         },
+                         user_agent=user_agent)
 
 @app.route('/test/headers', methods=['POST'])
 def test_headers():
     """Test suspicious header detection"""
     header_name = request.form.get('header_name', '')
     header_value = request.form.get('header_value', '')
-    
     test_request = type('Request', (), {
         'remote_addr': '127.0.0.1',
         'headers': {header_name: header_value}
     })
-    
     detected = waf.detect_fingerprinting(test_request)
     return render_template('test.html', 
                          test_results={
                              'success': not detected,
                              'message': 'Suspicious header detected!' if detected else 'No suspicious headers detected.'
-                         })
+                         },
+                         header_name=header_name,
+                         header_value=header_value)
 
 @app.route('/api/data')
 def get_data():
@@ -764,6 +783,30 @@ def check_captcha():
         'report': report,
         'details': results
     })
+
+@app.route('/scan/decoy-paths', methods=['GET', 'POST'])
+def scan_decoy_paths_view():
+    results = None
+    checked = None
+    url = ''
+    if request.method == 'POST':
+        url = request.form.get('url', '').strip()
+        if not url:
+            flash('Please enter a valid URL', 'error')
+            return redirect(request.url)
+        if not url.startswith('http'):
+            url = 'http://' + url
+        exposed, checked = scan_decoy_paths(url)
+        results = {
+            'exposed': exposed,
+            'recommendations': []
+        }
+        if exposed:
+            results['recommendations'].append('Restrict access to these paths using authentication, IP whitelisting, or by removing them from the server.')
+            results['recommendations'].append('Consider using a web server configuration (e.g., .htaccess, nginx rules) to block access to sensitive files and directories.')
+        else:
+            results['recommendations'].append('No common decoy paths are exposed. Good job!')
+    return render_template('decoy_scan.html', results=results, checked=checked, url=url)
 
 def find_available_port(start_port=5000, max_port=5050):
     """Find an available port to run the server on"""

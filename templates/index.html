@@ -1,149 +1,289 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
+<div class="row mb-4">
+    <div class="col-12 text-center">
+        <h1 class="display-4 fw-bold mb-2" style="letter-spacing:2px;">
+            <i class="bi bi-shield-lock text-primary"></i> GATEKEEPER X
+        </h1>
+        <p class="lead text-muted">Your premium dashboard for advanced web application security and threat detection.</p>
+    </div>
+</div>
+
+<!-- Quick Stats Panel -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-light mb-2">
+            <div class="card-body d-flex justify-content-around align-items-center flex-wrap">
+                <div class="stat-box text-center mx-2 my-1">
+                    <div class="fs-3 fw-bold text-primary"><i class="bi bi-bar-chart"></i> <span id="stat-total-scans">0</span></div>
+                    <div class="small text-muted">Total Scans</div>
+                </div>
+                <div class="stat-box text-center mx-2 my-1">
+                    <div class="fs-3 fw-bold text-danger"><i class="bi bi-shield-x"></i> <span id="stat-blocked-ips">0</span></div>
+                    <div class="small text-muted">Blocked IPs</div>
+                </div>
+                <div class="stat-box text-center mx-2 my-1">
+                    <div class="fs-3 fw-bold text-warning"><i class="bi bi-exclamation-triangle"></i> <span id="stat-active-alerts">0</span></div>
+                    <div class="small text-muted">Active Alerts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- First row: 3 main tools -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-lg border-0 bg-gradient tool-card animated-card" style="background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);" data-bs-toggle="tooltip" data-bs-placement="top" title="Scan URLs for threats and vulnerabilities.">
             <div class="card-body text-center">
-                <h1 class="card-title display-4 mb-4">
-                    <i class="bi bi-shield-lock text-primary"></i> Welcome to GATEKEEPER X
-                </h1>
-                <p class="lead text-muted">Advanced protection against web application attacks and WAF fingerprinting attempts.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card status-card h-100">
-            <div class="card-body">
-                <h5 class="card-title">
-                    <i class="bi bi-graph-up text-success"></i> System Status
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-search text-info fs-2"></i><br>URL Scanner
                 </h5>
-                <p class="card-text">WAF is actively protecting your application with real-time monitoring and threat detection.</p>
-                <a href="/status" class="btn btn-success">
-                    <i class="bi bi-eye"></i> View Status
+                <a href="/scan" class="btn btn-info btn-sm w-100 fw-bold tool-btn scan-btn-custom">
+                    <i class="bi bi-search"></i> Scan
                 </a>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card scan-card h-100">
-            <div class="card-body">
-                <h5 class="card-title">
-                    <i class="bi bi-shield-check text-primary"></i> Test WAF Protection
+    <div class="col-md-4">
+        <div class="card h-100 shadow-lg border-0 bg-gradient tool-card animated-card" style="background: linear-gradient(135deg, #f8ffae 0%, #43c6ac 100%);" data-bs-toggle="tooltip" data-bs-placement="top" title="Test your WAF by simulating attack patterns.">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-shield-check text-primary fs-2"></i><br>Test WAF Protection
                 </h5>
-                <p class="card-text">Test the WAF protection by simulating various attack patterns and security threats.</p>
-                <a href="/test" class="btn btn-primary">
-                    <i class="bi bi-shield-check"></i> Test WAF
+                <a href="/test" class="btn btn-primary btn-sm w-100 fw-bold tool-btn scan-btn-custom">
+                    <i class="bi bi-shield-check"></i> Scan
                 </a>
             </div>
         </div>
     </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">
-                    <i class="bi bi-search text-info"></i> URL Scanner
+    <div class="col-md-4">
+        <div class="card h-100 shadow-lg border-0 bg-gradient tool-card animated-card" style="background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);" data-bs-toggle="tooltip" data-bs-placement="top" title="Scan files and directories for trojans.">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-file-earmark-text text-warning fs-2"></i><br>DocSentinel
                 </h5>
-                <p class="card-text">Scan URLs for potential security threats and vulnerabilities.</p>
-                <a href="/scan" class="btn btn-info text-white">
-                    <i class="bi bi-search"></i> Scan URL
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">
-                    <i class="bi bi-file-earmark-text text-warning"></i> DocSentinel
-                </h5>
-                <p class="card-text">Scan files and directories for potential trojan infections.</p>
-                <a href="/scan/trojan" class="btn btn-warning">
-                    <i class="bi bi-file-earmark-text"></i> Scan Files
+                <a href="/scan/trojan" class="btn btn-warning btn-sm w-100 fw-bold tool-btn scan-btn-custom">
+                    <i class="bi bi-file-earmark-text"></i> Scan
                 </a>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h3>WAF Status</h3>
+<!-- Second row: Decoy Path Exposure Scanner & CAPTCHA Check Service -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100 shadow-lg border-0 bg-gradient tool-card animated-card" style="background: linear-gradient(135deg, #f953c6 0%, #b91d73 100%);" data-bs-toggle="tooltip" data-bs-placement="top" title="Check if common sensitive or decoy paths are exposed.">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-folder-symlink text-danger fs-2"></i><br>Decoy Path Exposure Scanner
+                </h5>
+                <a href="/scan/decoy-paths" class="btn btn-danger btn-sm w-100 fw-bold tool-btn scan-btn-custom">
+                    <i class="bi bi-folder-symlink"></i> Scan
+                </a>
             </div>
-            <div class="card-body">
-                <div id="statusInfo"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 shadow-lg border-0 bg-gradient tool-card animated-card" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);" data-bs-toggle="tooltip" data-bs-placement="top" title="Check if a website is protected by CAPTCHA.">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-shield-lock text-info fs-2"></i><br>CAPTCHA Check Service
+                </h5>
+                <a href="/scan/captcha" class="btn btn-info btn-sm w-100 fw-bold tool-btn scan-btn-custom">
+                    <i class="bi bi-shield-lock"></i> Scan
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title">CAPTCHA Check Service</h5>
-    </div>
-    <div class="card-body">
-        <form id="captchaCheckForm">
-            <div class="form-group">
-                <label for="captchaUrl">Website URL</label>
-                <input type="url" class="form-control" id="captchaUrl" name="url" required placeholder="https://example.com">
+<!-- Tool list for live search (hidden, for JS) -->
+<ul id="tool-list" class="d-none">
+    <li data-url="/scan">URL Scanner</li>
+    <li data-url="/test">Test WAF Protection</li>
+    <li data-url="/scan/trojan">DocSentinel</li>
+    <li data-url="/scan/decoy-paths">Decoy Path Exposure Scanner</li>
+    <li data-url="/scan/captcha">CAPTCHA Check Service</li>
+</ul>
+
+<!-- Suggestion dropdown for live search -->
+<div id="tool-suggestions" class="dropdown-menu" style="position:absolute;z-index:9999;display:none;"></div>
+
+<!-- Recent Activity/Alerts Panel (moved to bottom) -->
+<div class="row mb-4 mt-5">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-white animated-card">
+            <div class="card-header bg-primary text-white py-2">
+                <i class="bi bi-bell"></i> Recent Activity & Alerts
             </div>
-            <button type="submit" class="btn btn-primary">Check CAPTCHA</button>
-        </form>
-        <div id="captchaResults" class="mt-3" style="display: none;">
-            <div class="alert alert-info">
-                <h6>CAPTCHA Analysis Results</h6>
-                <pre id="captchaReport" class="mt-2"></pre>
+            <div class="card-body p-2" id="recent-activity-panel">
+                <ul class="list-unstyled mb-0" id="recent-activity-list">
+                    <li class="text-muted">No recent activity.</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
+{% block scripts %}
 <script>
-    // Function to update status
-    function updateStatus() {
-        fetch('/api/status')
-            .then(response => response.json())
-            .then(data => {
-                const statusInfo = document.getElementById('statusInfo');
-                statusInfo.innerHTML = `
-                    <p><strong>Blocked IPs:</strong> ${data.blocked_ips.length}</p>
-                    <p><strong>Active Alerts:</strong> ${data.alerts.length}</p>
-                `;
+    // Tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Card and button hover effect + animated transitions
+    $(document).ready(function() {
+        $('.tool-card').hover(
+            function() { $(this).addClass('shadow-xl border-primary animate__animated animate__pulse'); },
+            function() { $(this).removeClass('shadow-xl border-primary animate__animated animate__pulse'); }
+        );
+        $('.tool-btn').hover(
+            function() { $(this).addClass('shadow-sm'); },
+            function() { $(this).removeClass('shadow-sm'); }
+        );
+
+        // Quick Stats AJAX
+        function updateStats() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    $('#stat-blocked-ips').text(data.blocked_ips.length);
+                    $('#stat-active-alerts').text(data.alerts.length);
+                    // For demo, total scans is sum of blocked_ips and alerts
+                    $('#stat-total-scans').text(data.blocked_ips.length + data.alerts.length);
+                    // Recent Activity/Alerts
+                    var $list = $('#recent-activity-list');
+                    $list.empty();
+                    if (data.alerts.length === 0) {
+                        $list.append('<li class="text-muted">No recent activity.</li>');
+                    } else {
+                        data.alerts.slice(-5).reverse().forEach(function(alert) {
+                            $list.append('<li><i class="bi bi-exclamation-circle text-warning"></i> ' + alert + '</li>');
+                        });
+                    }
+                });
+        }
+        updateStats();
+        setInterval(updateStats, 5000);
+
+        // Live search for tools
+        var $searchInput = $(".navbar input[type='search']");
+        var $suggestions = $('#tool-suggestions');
+        var $toolList = $('#tool-list li');
+        $searchInput.on('input', function() {
+            var val = $(this).val().toLowerCase();
+            $suggestions.empty();
+            if (val.length === 0) {
+                $suggestions.hide();
+                return;
+            }
+            var matches = $toolList.filter(function() {
+                return $(this).text().toLowerCase().indexOf(val) !== -1;
             });
-    }
-
-    // Initial update
-    updateStatus();
-    setInterval(updateStatus, 5000); // Update status every 5 seconds
-
-    $('#captchaCheckForm').submit(function(e) {
-        e.preventDefault();
-        const url = $('#captchaUrl').val();
-        
-        $.ajax({
-            url: '/check-captcha',
-            method: 'POST',
-            data: { url: url },
-            success: function(response) {
-                if (response.success) {
-                    $('#captchaReport').text(response.report);
-                    $('#captchaResults').show();
-                } else {
-                    alert('Error: ' + response.error);
-                }
-            },
-            error: function() {
-                alert('Error checking CAPTCHA. Please try again.');
+            if (matches.length === 0) {
+                $suggestions.hide();
+                return;
+            }
+            matches.each(function() {
+                var $item = $('<button type="button" class="dropdown-item"></button>');
+                $item.text($(this).text());
+                $item.attr('data-url', $(this).data('url'));
+                $suggestions.append($item);
+            });
+            var offset = $searchInput.offset();
+            $suggestions.css({
+                top: offset.top + $searchInput.outerHeight(),
+                left: offset.left,
+                width: $searchInput.outerWidth()
+            }).show();
+        });
+        $suggestions.on('click', '.dropdown-item', function() {
+            window.location.href = $(this).data('url');
+        });
+        $searchInput.on('keydown', function(e) {
+            if (e.key === 'ArrowDown') {
+                $suggestions.find('.dropdown-item').first().focus();
+            }
+        });
+        $suggestions.on('keydown', '.dropdown-item', function(e) {
+            if (e.key === 'Enter') {
+                window.location.href = $(this).data('url');
+            } else if (e.key === 'ArrowDown') {
+                $(this).next().focus();
+            } else if (e.key === 'ArrowUp') {
+                $(this).prev().focus();
+            }
+        });
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.navbar, #tool-suggestions').length) {
+                $suggestions.hide();
             }
         });
     });
-</script> 
+</script>
+<style>
+.scan-btn-custom {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+    font-size: 0.95rem !important;
+    border-radius: 0.5rem !important;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+.animated-card {
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+.animated-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.12) !important;
+}
+</style>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer mt-auto py-4 bg-dark text-white-50">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-2 mb-md-0">
+                <h6 class="text-white">Contact & Queries</h6>
+                <form>
+                    <div class="mb-2">
+                        <input type="text" class="form-control form-control-sm" placeholder="Your Name">
+                    </div>
+                    <div class="mb-2">
+                        <input type="email" class="form-control form-control-sm" placeholder="Your Email">
+                    </div>
+                    <div class="mb-2">
+                        <textarea class="form-control form-control-sm" rows="2" placeholder="Your Query or Comment"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Send</button>
+                </form>
+            </div>
+            <div class="col-md-4 mb-2 mb-md-0 text-center">
+                <h6 class="text-white">Developers Team</h6>
+                <ul class="list-unstyled mb-0">
+                    <li>Ajay Kumar</li>
+                    <li>Uday</li>
+                    <li>Mahender</li>
+                </ul>
+                <div class="small mt-2">CMR College of Engineering and Technology <br>Kandlakoya, Medchal, Hyderabad</div>
+            </div>
+            <div class="col-md-4 text-md-end text-center">
+                <h6 class="text-white">Location</h6>
+                <div>Hyderabad, Medchal</div>
+                <div class="mt-2">
+                    <span>&copy; {{ 2025 }} GATEKEEPER X</span><br>
+                    <a href="https://github.com/" class="text-white-50 text-decoration-underline">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}

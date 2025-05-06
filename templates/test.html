@@ -17,10 +17,10 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Test Fingerprinting Detection</h5>
-                <form action="/test/fingerprint" method="post">
+                <form method="POST" action="/test/fingerprint">
                     <div class="mb-3">
                         <label for="userAgent" class="form-label">User Agent</label>
-                        <input type="text" class="form-control" id="userAgent" name="user_agent" value="wafw00f">
+                        <input type="text" class="form-control" id="userAgent" name="user_agent" placeholder="Enter User Agent" value="{{ user_agent|default('') }}">
                     </div>
                     <button type="submit" class="btn btn-primary">Test</button>
                 </form>
@@ -34,11 +34,11 @@
                 <form action="/test/headers" method="post">
                     <div class="mb-3">
                         <label for="headerName" class="form-label">Header Name</label>
-                        <input type="text" class="form-control" id="headerName" name="header_name" value="X-WAF-Test">
+                        <input type="text" class="form-control" id="headerName" name="header_name" placeholder="Enter Header Name" value="{{ header_name|default('') }}">
                     </div>
                     <div class="mb-3">
                         <label for="headerValue" class="form-label">Header Value</label>
-                        <input type="text" class="form-control" id="headerValue" name="header_value" value="true">
+                        <input type="text" class="form-control" id="headerValue" name="header_value" placeholder="Enter Header Value" value="{{ header_value|default('') }}">
                     </div>
                     <button type="submit" class="btn btn-primary">Test</button>
                 </form>
