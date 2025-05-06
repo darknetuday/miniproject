@@ -540,6 +540,8 @@ class SimpleWAF:
         self.fingerprinting_attempts = {}
         self.blocked_ips = set()
         self.alerts = deque(maxlen=10)
+        self.total_scans = 0
+        self.active_alerts = 0
         self.suspicious_patterns = [
             r'wafw00f',
             r'waf-fingerprint',
@@ -562,9 +564,16 @@ class SimpleWAF:
         user_agent = request.headers.get('User-Agent', '').lower()
         for pattern in self.suspicious_patterns:
             if re.search(pattern, user_agent, re.IGNORECASE):
-                alert = f"Fingerprinting attempt detected from {ip} using User-Agent: {user_agent}"
-                logger.warning(alert)
+                alert = {
+                    'timestamp': current_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'ip': ip,
+                    'type': 'user_agent',
+                    'pattern': pattern,
+                    'value': user_agent
+                }
                 self.alerts.append(alert)
+                self.active_alerts += 1
+                logger.warning(f"Fingerprinting detected: {alert}")
                 return True
                 
         # Check for common fingerprinting headers
@@ -577,15 +586,26 @@ class SimpleWAF:
         
         for header in suspicious_headers:
             if header in request.headers:
-                alert = f"Fingerprinting header detected from {ip}: {header}"
-                logger.warning(alert)
+                alert = {
+                    'timestamp': current_time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'ip': ip,
+                    'type': 'header',
+                    'header': header,
+                    'value': request.headers[header]
+                }
                 self.alerts.append(alert)
+                self.active_alerts += 1
+                logger.warning(f"Fingerprinting detected: {alert}")
                 return True
                 
         return False
         
     def apply_protection(self, request):
         """Apply WAF protection measures"""
+        # Only increment total_scans for actual scan requests
+        if request.path.startswith('/scan') and request.method == 'POST':
+            self.total_scans += 1
+        
         if self.detect_fingerprinting(request):
             ip = request.remote_addr
             self.blocked_ips.add(ip)
@@ -595,6 +615,15 @@ class SimpleWAF:
             return False, "Access denied - IP blocked"
             
         return True, None
+
+    def get_stats(self):
+        """Get current WAF statistics"""
+        return {
+            'blocked_ips': list(self.blocked_ips),
+            'total_scans': self.total_scans,
+            'active_alerts': self.active_alerts,
+            'alerts': list(self.alerts)
+        }
 
 # Initialize WAF and Scanner
 waf = SimpleWAF()
@@ -769,20 +798,19 @@ def scan_directory():
     
     return render_template('directory_scan.html')
 
-@app.route('/check-captcha', methods=['POST'])
-def check_captcha():
-    url = request.form.get('url')
-    if not url:
-        return jsonify({'error': 'URL is required'}), 400
+@app.route('/scan/captcha', methods=['GET', 'POST'])
+def scan_captcha():
+    if request.method == 'POST':
+        url = request.form.get('url')
+        if not url:
+            flash('Please enter a valid URL', 'error')
+            return redirect(url_for('scan_captcha'))
+            
+        results = captcha_checker.check_url(url)
+        report = captcha_checker.generate_report(results)
+        return render_template('captcha_scan.html', results={'report': report})
         
-    results = captcha_checker.check_url(url)
-    report = captcha_checker.generate_report(results)
-    
-    return jsonify({
-        'success': True,
-        'report': report,
-        'details': results
-    })
+    return render_template('captcha_scan.html')
 
 @app.route('/scan/decoy-paths', methods=['GET', 'POST'])
 def scan_decoy_paths_view():
@@ -807,6 +835,11 @@ def scan_decoy_paths_view():
         else:
             results['recommendations'].append('No common decoy paths are exposed. Good job!')
     return render_template('decoy_scan.html', results=results, checked=checked, url=url)
+
+@app.route('/api/status')
+def get_status():
+    """API endpoint for getting current WAF status"""
+    return jsonify(waf.get_stats())
 
 def find_available_port(start_port=5000, max_port=5050):
     """Find an available port to run the server on"""
